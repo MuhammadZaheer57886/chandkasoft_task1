@@ -1,3 +1,4 @@
+import 'package:cs_task1/API/api_config.dart';
 import 'package:cs_task1/ui/screens/custombutton.dart';
 import 'package:cs_task1/utils/constants/app_colors.dart';
 import 'package:dio/dio.dart';
@@ -24,8 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchPosts() async {
     try {
-      final response =
-          await Dio().get('https://jsonplaceholder.typicode.com/posts');
+      final response = await Dio().get(APIConfig.postsEndpoint);
       if (response.statusCode == 200) {
         setState(() {
           posts = response.data;

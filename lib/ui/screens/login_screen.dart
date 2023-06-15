@@ -15,7 +15,8 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController password = TextEditingController();
   Map<String, dynamic>? userProfile;
   bool _obscurePassword = true;
-  void login(String email, String password) async {
+
+  Future<void> login(String email, String password) async {
     try {
       final dio = Dio();
       final response =
@@ -26,8 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         for (var user in users) {
           String usernameFromApi = user['email'];
-          String passwordFromApi =
-              user['email']; // Assuming password is same as username in the API
+          String passwordFromApi = user['email'];
 
           if (email == usernameFromApi && password == passwordFromApi) {
             credentialsMatch = true;
@@ -49,26 +49,26 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         } else {
           print('Username or password do not match with API');
-          // Show error message or handle error condition here
+          showErrorMessage('Invalid credentials');
         }
       } else {
         print('API request failed');
-        // Show error message or handle error condition here
+        showErrorMessage('Failed to connect to the server');
       }
     } catch (e) {
       print(e.toString());
-      // Show error message or handle exception here
+      showErrorMessage('An error occurred');
     }
   }
 
   void validateAndSubmit() {
     String email = username.text.trim();
     String pass = password.text.trim();
-
+login(email, pass);
     if (email.isNotEmpty && pass.isNotEmpty) {
       if (isValidEmail(email)) {
         // Valid email and non-empty password
-        login(email, pass);
+        
       } else {
         showErrorMessage('Please enter a valid email address');
       }
@@ -99,82 +99,81 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget buildInitialInput(Size size) => Center(
-  child: Container(
-    width: size.width * 0.9,
-    padding: const EdgeInsets.all(16.0),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset(
-          'assets/images/lorem_icon.jpeg',
-          width: 150,
-          height: 150,
-        ),
-        const SizedBox(height: 32.0),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: TextFormField(
-            controller: username,
-            decoration: const InputDecoration(
-              labelText: 'Email',
-              prefixIcon: Icon(Icons.email),
-              border: InputBorder.none,
-            ),
-          ),
-        ),
-        const SizedBox(height: 16.0),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: TextFormField(
-            controller: password,
-            decoration: InputDecoration(
-              labelText: 'Password',
-              prefixIcon: Icon(Icons.lock),
-              suffixIcon: IconButton(
-                icon: Icon(Icons.remove_red_eye),
-                onPressed: () {
-                  setState(() {
-                    _obscurePassword = !_obscurePassword;
-                  });
-                },
+        child: Container(
+          width: size.width * 0.9,
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/images/lorem_icon.jpeg',
+                width: 150,
+                height: 150,
               ),
-              border: InputBorder.none,
-            ),
-            obscureText: _obscurePassword,
+              const SizedBox(height: 32.0),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: TextFormField(
+                  controller: username,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    prefixIcon: Icon(Icons.email),
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: TextFormField(
+                  controller: password,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    prefixIcon: Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.remove_red_eye),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                    border: InputBorder.none,
+                  ),
+                  obscureText: _obscurePassword,
+                ),
+              ),
+              const SizedBox(height: 32.0),
+              SizedBox(
+                width: size.width,
+                height: 55.0,
+                child: ElevatedButton(
+                  onPressed: validateAndSubmit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.i.primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                    ),
+                  ),
+                  child: const Text(
+                    'LOGIN',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 32.0),
-        SizedBox(
-          width: size.width,
-          height: 55.0,
-          child: ElevatedButton(
-            onPressed: validateAndSubmit,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.i.primaryColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(50.0),
-              ),
-            ),
-            child: const Text(
-              'LOGIN',
-              style: TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-      ],
-    ),
-  ),
-);
-
+      );
 
   @override
   void dispose() {
